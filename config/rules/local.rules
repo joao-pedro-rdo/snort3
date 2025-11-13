@@ -1,0 +1,2 @@
+alert icmp any any -> any any (msg:"TESTE ICMP PING"; sid:1000001;)
+alert tcp any any -> any 443 (msg:"Possible HTTP GET request"; content: "GET"; http_method; sid:1000002;)

@@ -1,0 +1,36 @@
+services:
+  snort:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: joaoprdo/snort3:latest
+    container_name: snort
+    network_mode: "host" # Essencial para o Snort ver o tráfego da rede
+    cap_add:
+      - NET_RAW # Permite capturar pacotes
+      - NET_ADMIN # Permite colocar a placa em modo promíscuo
+
+    # O usuário já é root por padrão no nosso Dockerfile, mas pode manter
+    user: root
+
+    # Não precisamos redefinir o PATH aqui, o Dockerfile já faz isso.
+    # environment: ...
+
+    volumes:
+      # ATENÇÃO: Só descomente a linha do snort.lua se você TIVER esse arquivo localmente.
+      # Se você mapear um arquivo que não existe, o Docker cria uma pasta vazia e quebra o Snort.
+      # - ./config/snort.lua:/opt/snort3/etc/snort/snort.lua:ro
+
+      # Mapeia as regras locais (se tiver)
+      - ./config/rules:/opt/snort3/etc/snort/rules:rw
+
+      # Mapeia os logs para fora do container (Recomendado)
+      - ./logs:/var/log/snort
+
+    working_dir: /opt/snort3
+    stdin_open: true # Equivalente a -i
+    tty: true # Equivalente a -t
+
+    # Mantém o container rodando para você entrar e debugar
+    command: "sleep infinity"
+    restart: "no"
